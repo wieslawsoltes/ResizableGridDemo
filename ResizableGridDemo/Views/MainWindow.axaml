@@ -39,7 +39,7 @@
       <ItemsControl Items="{Binding Columns}">
         <ItemsControl.Styles>
           <Style Selector="ItemsControl > ContentPresenter">
-            <Setter Property="(Grid.Column)" Value="{Binding ColumnIndex}" x:DataType="vm:ColumnViewModel" />
+            <Setter Property="(Grid.Column)" Value="{Binding ColumnIndex}" x:DataType="vm:ColumnViewModel" x:CompileBindings="False" />
           </Style>
           <Style Selector="controls|GridSplitter">
             <Setter Property="Focusable" Value="True" />
