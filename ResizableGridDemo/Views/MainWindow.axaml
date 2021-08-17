@@ -13,15 +13,24 @@
 
     <DockPanel>
     
-        <ListBox Items="{Binding Columns}" DockPanel.Dock="Left" Width="100">
+        <ListBox Items="{Binding Columns}" DockPanel.Dock="Left" Margin="12" Width="100">
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </ListBox.Styles>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="views:Column">
-                    <TextBlock Text="{Binding Definition.Width, FallbackValue='-'}"/>
+                    <Border Background="{Binding Background}">
+                        <TextBlock Text="{Binding Definition.Width, FallbackValue='-'}" Padding="6"/>
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <ItemsControl Items="{Binding Columns}">
+        <ItemsControl Items="{Binding Columns}" Margin="12">
             <ItemsControl.Styles>
                 <Style Selector="ItemsControl > ContentPresenter">
                     <Setter Property="(Grid.Column)" Value="{Binding ColumnIndex}" x:DataType="views:Column"/>
