@@ -18,7 +18,7 @@ using Avalonia.Styling;
 using Avalonia.Utilities;
 using Avalonia.VisualTree;
 
-namespace ResizableGridDemo.Views
+namespace ResizableGridDemo.Controls
 {
     /// <summary>
     /// Represents the control that redistributes space between columns or rows of a <see cref="Grid"/> control.

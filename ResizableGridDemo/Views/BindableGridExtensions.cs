@@ -2,20 +2,21 @@
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
+using ResizableGridDemo.ViewModels;
 
 namespace ResizableGridDemo.Views
 {
     public class BindableGridExtensions : AvaloniaObject
     {
-        public static readonly AttachedProperty<ObservableCollection<Column>> ColumnDefinitionsBindingProperty = 
-            AvaloniaProperty.RegisterAttached<BindableGridExtensions, ObservableCollection<Column>>("ColumnDefinitionsBinding", typeof(Grid));
+        public static readonly AttachedProperty<ObservableCollection<Column>?> ColumnDefinitionsBindingProperty = 
+            AvaloniaProperty.RegisterAttached<BindableGridExtensions, ObservableCollection<Column>?>("ColumnDefinitionsBinding", typeof(Grid));
 
-        public static ObservableCollection<Column> GetColumnDefinitionsBinding(Grid grid)
+        public static ObservableCollection<Column>? GetColumnDefinitionsBinding(Grid grid)
         {
             return grid.GetValue(ColumnDefinitionsBindingProperty);
         }
 
-        public static void SetColumnDefinitionsBinding(Grid grid, ObservableCollection<Column> value)
+        public static void SetColumnDefinitionsBinding(Grid grid, ObservableCollection<Column>? value)
         {
             grid.SetValue(ColumnDefinitionsBindingProperty, value);
         }

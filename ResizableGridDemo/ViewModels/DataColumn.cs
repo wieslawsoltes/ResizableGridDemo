@@ -1,4 +1,4 @@
-﻿namespace ResizableGridDemo.Views
+﻿namespace ResizableGridDemo.ViewModels
 {
     public class DataColumn : Column
     {

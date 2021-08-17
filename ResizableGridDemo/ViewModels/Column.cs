@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace ResizableGridDemo.Views
+namespace ResizableGridDemo.ViewModels
 {
     public abstract class Column
     {

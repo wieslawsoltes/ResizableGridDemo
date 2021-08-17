@@ -1,7 +1,7 @@
 ﻿using System;
 using Avalonia.Controls;
 
-namespace ResizableGridDemo.Views
+namespace ResizableGridDemo.Controls
 {
     public static class DefinitionBaseExtensions
     {

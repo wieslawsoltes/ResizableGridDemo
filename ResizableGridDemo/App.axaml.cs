@@ -19,6 +19,7 @@ namespace ResizableGridDemo
             {
                 desktop.MainWindow = new MainWindow
                 {
+                    DataContext = new MainWindowViewModel()
                 };
             }
 
