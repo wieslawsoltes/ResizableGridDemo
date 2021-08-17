@@ -159,41 +159,26 @@ namespace ResizableGridDemo.Controls
         {
             var resizeBehavior = ResizeBehavior;
 
-            if (resizeBehavior == GridResizeBehavior.BasedOnAlignment)
+            if (resizeBehavior != GridResizeBehavior.BasedOnAlignment)
             {
-                if (direction == GridResizeDirection.Columns)
-                {
-                    switch (HorizontalAlignment)
-                    {
-                        case HorizontalAlignment.Left:
-                            resizeBehavior = GridResizeBehavior.PreviousAndCurrent;
-                            break;
-                        case HorizontalAlignment.Right:
-                            resizeBehavior = GridResizeBehavior.CurrentAndNext;
-                            break;
-                        default:
-                            resizeBehavior = GridResizeBehavior.PreviousAndNext;
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (VerticalAlignment)
-                    {
-                        case VerticalAlignment.Top:
-                            resizeBehavior = GridResizeBehavior.PreviousAndCurrent;
-                            break;
-                        case VerticalAlignment.Bottom:
-                            resizeBehavior = GridResizeBehavior.CurrentAndNext;
-                            break;
-                        default:
-                            resizeBehavior = GridResizeBehavior.PreviousAndNext;
-                            break;
-                    }
-                }
+                return resizeBehavior;
             }
-
-            return resizeBehavior;
+ 
+            return direction switch
+            {
+                GridResizeDirection.Columns => HorizontalAlignment switch
+                {
+                    HorizontalAlignment.Left => GridResizeBehavior.PreviousAndCurrent,
+                    HorizontalAlignment.Right => GridResizeBehavior.CurrentAndNext,
+                    _ => GridResizeBehavior.PreviousAndNext
+                },
+                _ => VerticalAlignment switch
+                {
+                    VerticalAlignment.Top => GridResizeBehavior.PreviousAndCurrent,
+                    VerticalAlignment.Bottom => GridResizeBehavior.CurrentAndNext,
+                    _ => GridResizeBehavior.PreviousAndNext
+                }
+            };
         }
 
         /// <summary>
