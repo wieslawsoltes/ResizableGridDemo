@@ -1,13 +1,14 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ReactiveUI;
 
 namespace ResizableGridDemo.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<ColumnViewModel> Columns { get; set; }
-
         public MainWindowViewModel()
         {
             Columns = new ObservableCollection<ColumnViewModel>();
@@ -82,6 +83,12 @@ namespace ResizableGridDemo.ViewModels
                 ColumnIndex = 9,
                 Background = Brushes.Yellow
             });
+
+            this.RaisePropertyChanged(nameof(ColumnDefinitions));
         }
+
+        public ObservableCollection<ColumnViewModel> Columns { get; set; }
+
+        public IEnumerable<ColumnDefinition?>? ColumnDefinitions => Columns?.Select(x => x.Definition);
     }
 }

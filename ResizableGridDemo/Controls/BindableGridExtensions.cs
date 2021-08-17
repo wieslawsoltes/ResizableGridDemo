@@ -1,22 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using ResizableGridDemo.ViewModels;
 
-namespace ResizableGridDemo.Views
+namespace ResizableGridDemo.Controls
 {
     public class BindableGridExtensions : AvaloniaObject
     {
-        public static readonly AttachedProperty<ObservableCollection<ColumnViewModel>?> ColumnDefinitionsBindingProperty = 
-            AvaloniaProperty.RegisterAttached<BindableGridExtensions, ObservableCollection<ColumnViewModel>?>("ColumnDefinitionsBinding", typeof(Grid));
+        public static readonly AttachedProperty<IEnumerable<ColumnDefinition?>?> ColumnDefinitionsBindingProperty = 
+            AvaloniaProperty.RegisterAttached<BindableGridExtensions, IEnumerable<ColumnDefinition?>?>("ColumnDefinitionsBinding", typeof(Grid));
 
-        public static ObservableCollection<ColumnViewModel>? GetColumnDefinitionsBinding(Grid grid)
+        public static IEnumerable<ColumnDefinition?>? GetColumnDefinitionsBinding(Grid grid)
         {
             return grid.GetValue(ColumnDefinitionsBindingProperty);
         }
 
-        public static void SetColumnDefinitionsBinding(Grid grid, ObservableCollection<ColumnViewModel>? value)
+        public static void SetColumnDefinitionsBinding(Grid grid, IEnumerable<ColumnDefinition?>? value)
         {
             grid.SetValue(ColumnDefinitionsBindingProperty, value);
         }
@@ -28,7 +29,7 @@ namespace ResizableGridDemo.Views
                 var oldColumns = e.OldValue.GetValueOrDefault();
                 var newColumns = e.NewValue.GetValueOrDefault();
 
-                if (oldColumns == newColumns)
+                if (Equals(oldColumns, newColumns))
                 {
                     return;
                 }
@@ -44,11 +45,11 @@ namespace ResizableGridDemo.Views
                     {
                         grid.ColumnDefinitions.Clear();
 
-                        foreach (var column in newColumns)
+                        foreach (var columnDefinition in newColumns)
                         {
-                            if (column.Definition is { })
+                            if (columnDefinition is { })
                             {
-                                grid.ColumnDefinitions.Add(column.Definition);
+                                grid.ColumnDefinitions.Add(columnDefinition);
                             }
                         }
                     }

@@ -71,7 +71,7 @@
         </ItemsControl.Styles>
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
-            <Grid views:BindableGridExtensions.ColumnDefinitionsBinding="{Binding Columns}" />
+            <Grid controls:BindableGridExtensions.ColumnDefinitionsBinding="{Binding ColumnDefinitions}" />
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.DataTemplates>
