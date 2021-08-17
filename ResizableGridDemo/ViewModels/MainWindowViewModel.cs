@@ -85,6 +85,11 @@ namespace ResizableGridDemo.ViewModels
             });
 
             this.RaisePropertyChanged(nameof(ColumnDefinitions));
+
+            Columns.CollectionChanged += (_, _) =>
+            {
+                this.RaisePropertyChanged(nameof(ColumnDefinitions));
+            };
         }
 
         public ObservableCollection<ColumnViewModel> Columns { get; set; }
