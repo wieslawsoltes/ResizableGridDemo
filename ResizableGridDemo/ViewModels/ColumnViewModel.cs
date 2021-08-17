@@ -3,7 +3,7 @@ using Avalonia.Media;
 
 namespace ResizableGridDemo.ViewModels
 {
-    public abstract class Column
+    public abstract class ColumnViewModel
     {
         public string? Header { get; set; }
         public ColumnDefinition? Definition { get; set; }

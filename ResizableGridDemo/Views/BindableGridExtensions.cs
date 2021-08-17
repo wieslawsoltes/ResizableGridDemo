@@ -8,15 +8,15 @@ namespace ResizableGridDemo.Views
 {
     public class BindableGridExtensions : AvaloniaObject
     {
-        public static readonly AttachedProperty<ObservableCollection<Column>?> ColumnDefinitionsBindingProperty = 
-            AvaloniaProperty.RegisterAttached<BindableGridExtensions, ObservableCollection<Column>?>("ColumnDefinitionsBinding", typeof(Grid));
+        public static readonly AttachedProperty<ObservableCollection<ColumnViewModel>?> ColumnDefinitionsBindingProperty = 
+            AvaloniaProperty.RegisterAttached<BindableGridExtensions, ObservableCollection<ColumnViewModel>?>("ColumnDefinitionsBinding", typeof(Grid));
 
-        public static ObservableCollection<Column>? GetColumnDefinitionsBinding(Grid grid)
+        public static ObservableCollection<ColumnViewModel>? GetColumnDefinitionsBinding(Grid grid)
         {
             return grid.GetValue(ColumnDefinitionsBindingProperty);
         }
 
-        public static void SetColumnDefinitionsBinding(Grid grid, ObservableCollection<Column>? value)
+        public static void SetColumnDefinitionsBinding(Grid grid, ObservableCollection<ColumnViewModel>? value)
         {
             grid.SetValue(ColumnDefinitionsBindingProperty, value);
         }

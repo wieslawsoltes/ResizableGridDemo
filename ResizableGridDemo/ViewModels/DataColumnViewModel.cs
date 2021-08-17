@@ -1,6 +1,6 @@
 ﻿namespace ResizableGridDemo.ViewModels
 {
-    public class DataColumn : Column
+    public class DataColumnViewModel : ColumnViewModel
     {
     }
 }
