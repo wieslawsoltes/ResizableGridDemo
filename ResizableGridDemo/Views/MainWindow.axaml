@@ -30,8 +30,8 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-      <ItemsControl Items="{Binding Columns}" Margin="12">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="12">
+      <ItemsControl Items="{Binding Columns}">
         <ItemsControl.Styles>
           <Style Selector="ItemsControl > ContentPresenter">
             <Setter Property="(Grid.Column)" Value="{Binding ColumnIndex}" x:DataType="views:Column" />
