@@ -14,7 +14,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Styling;
 using Avalonia.Utilities;
 using Avalonia.VisualTree;
 
@@ -23,7 +22,7 @@ namespace ResizableGridDemo.Controls
     /// <summary>
     /// Represents the control that redistributes space between columns or rows of a <see cref="Grid"/> control.
     /// </summary>
-    public class GridSplitter : Thumb, IStyleable
+    public class GridSplitter : Thumb
     {
         /// <summary>
         /// Defines the <see cref="ResizeDirection"/> property.
@@ -58,13 +57,13 @@ namespace ResizableGridDemo.Controls
         /// <summary>
         /// Defines the <see cref="PreviewContent"/> property.
         /// </summary>
-        public static readonly StyledProperty<ITemplate<IControl>> PreviewContentProperty =
-            AvaloniaProperty.Register<GridSplitter, ITemplate<IControl>>(nameof(PreviewContent));
+        public static readonly StyledProperty<ITemplate<IControl>?> PreviewContentProperty =
+            AvaloniaProperty.Register<GridSplitter, ITemplate<IControl>?>(nameof(PreviewContent));
 
         private static readonly Cursor s_columnSplitterCursor = new Cursor(StandardCursorType.SizeWestEast);
         private static readonly Cursor s_rowSplitterCursor = new Cursor(StandardCursorType.SizeNorthSouth);
 
-        private ResizeData _resizeData;
+        private ResizeData? _resizeData;
 
         /// <summary>
         /// Indicates whether the Splitter resizes the Columns, Rows, or Both.
@@ -114,20 +113,18 @@ namespace ResizableGridDemo.Controls
         /// <summary>
         /// Gets or sets content that will be shown when <see cref="ShowsPreview"/> is enabled and user starts resize operation.
         /// </summary>
-        public ITemplate<IControl> PreviewContent
+        public ITemplate<IControl>? PreviewContent
         {
             get => GetValue(PreviewContentProperty);
             set => SetValue(PreviewContentProperty, value);
         }
 
-        //Type IStyleable.StyleKey => typeof(Avalonia.Controls.GridSplitter);
-        
         /// <summary>
         /// Converts BasedOnAlignment direction to Rows, Columns, or Both depending on its width/height.
         /// </summary>
-        internal GridResizeDirection GetEffectiveResizeDirection()
+        private GridResizeDirection GetEffectiveResizeDirection()
         {
-            GridResizeDirection direction = ResizeDirection;
+            var direction = ResizeDirection;
 
             if (direction != GridResizeDirection.Auto)
             {
@@ -160,7 +157,7 @@ namespace ResizableGridDemo.Controls
         /// </summary>
         private GridResizeBehavior GetEffectiveResizeBehavior(GridResizeDirection direction)
         {
-            GridResizeBehavior resizeBehavior = ResizeBehavior;
+            var resizeBehavior = ResizeBehavior;
 
             if (resizeBehavior == GridResizeBehavior.BasedOnAlignment)
             {
@@ -204,7 +201,7 @@ namespace ResizableGridDemo.Controls
         /// </summary>
         private void RemovePreviewAdorner()
         {
-            if (_resizeData.Adorner != null)
+            if (_resizeData?.Adorner != null)
             {
                 AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
                 layer.Children.Remove(_resizeData.Adorner);
@@ -219,7 +216,7 @@ namespace ResizableGridDemo.Controls
             // If not in a grid or can't resize, do nothing.
             if (GetPanel() is { } grid)
             {
-                GridResizeDirection resizeDirection = GetEffectiveResizeDirection();
+                var resizeDirection = GetEffectiveResizeDirection();
 
                 // Setup data used for resizing.
                 _resizeData = new ResizeData
@@ -249,6 +246,10 @@ namespace ResizableGridDemo.Controls
         /// </summary>
         private bool SetupDefinitionsToResize()
         {
+            if (_resizeData?.Grid is null)
+            {
+                return false;
+            }
             int gridSpan = GetValueInternal(this, _resizeData.ResizeDirection == GridResizeDirection.Columns ?
                 Grid.ColumnSpanProperty :
                 Grid.RowSpanProperty);
@@ -329,7 +330,7 @@ namespace ResizableGridDemo.Controls
         /// </summary>
         private void SetupPreviewAdorner()
         {
-            if (_resizeData.ShowsPreview)
+            if (_resizeData?.ShowsPreview ?? false)
             {
                 // Get the adorner layer and add an adorner to it.
                 var adornerLayer = AdornerLayer.GetAdornerLayer(_resizeData.Grid);
@@ -342,13 +343,15 @@ namespace ResizableGridDemo.Controls
                     return;
                 }
 
-                IControl builtPreviewContent = previewContent?.Build();
+                var builtPreviewContent = previewContent?.Build();
+                if (builtPreviewContent is not null)
+                {
+                    _resizeData.Adorner = new PreviewAdorner(builtPreviewContent);
 
-                _resizeData.Adorner = new PreviewAdorner(builtPreviewContent);
+                    AdornerLayer.SetAdornedElement(_resizeData.Adorner, this);
 
-                AdornerLayer.SetAdornedElement(_resizeData.Adorner, this);
-
-                adornerLayer.Children.Add(_resizeData.Adorner);
+                    adornerLayer.Children.Add(_resizeData.Adorner);
+                }
 
                 // Get constraints on preview's translation.
                 GetDeltaConstraints(out _resizeData.MinChange, out _resizeData.MaxChange);
@@ -359,7 +362,7 @@ namespace ResizableGridDemo.Controls
         {
             base.OnPointerEnter(e);
 
-            GridResizeDirection direction = GetEffectiveResizeDirection();
+            var direction = GetEffectiveResizeDirection();
 
             switch (direction)
             {
@@ -413,6 +416,10 @@ namespace ResizableGridDemo.Controls
 
                 if (_resizeData.ShowsPreview)
                 {
+                    if (_resizeData.Adorner is null)
+                    {
+                        return;
+                    }
                     // Set the Translation of the Adorner to the distance from the thumb.
                     if (_resizeData.ResizeDirection == GridResizeDirection.Columns)
                     {
@@ -441,7 +448,7 @@ namespace ResizableGridDemo.Controls
 
             if (_resizeData != null)
             {
-                if (_resizeData.ShowsPreview)
+                if (_resizeData.ShowsPreview && _resizeData.Adorner != null)
                 {
                     // Update the grid.
                     MoveSplitter(_resizeData.Adorner.OffsetX, _resizeData.Adorner.OffsetY);
@@ -454,7 +461,7 @@ namespace ResizableGridDemo.Controls
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            Key key = e.Key;
+            var key = e.Key;
 
             switch (key)
             {
@@ -487,6 +494,10 @@ namespace ResizableGridDemo.Controls
         /// </summary>
         private void CancelResize()
         {
+            if (_resizeData is null)
+            {
+                return;
+            }
             // Restore original column/row lengths.
             if (_resizeData.ShowsPreview)
             {
@@ -494,8 +505,14 @@ namespace ResizableGridDemo.Controls
             }
             else // Reset the columns/rows lengths to the saved values.
             {
-                SetDefinitionLength(_resizeData.Definition1, _resizeData.OriginalDefinition1Length);
-                SetDefinitionLength(_resizeData.Definition2, _resizeData.OriginalDefinition2Length);
+                if (_resizeData.Definition1 is not null)
+                {
+                    SetDefinitionLength(_resizeData.Definition1, _resizeData.OriginalDefinition1Length);
+                }
+                if (_resizeData.Definition2 is not null)
+                {
+                    SetDefinitionLength(_resizeData.Definition2, _resizeData.OriginalDefinition2Length);
+                }
             }
 
             _resizeData = null;
@@ -515,18 +532,21 @@ namespace ResizableGridDemo.Controls
         private static DefinitionBase GetGridDefinition(Grid grid, int index, GridResizeDirection direction)
         {
             return direction == GridResizeDirection.Columns ?
-                (DefinitionBase)grid.ColumnDefinitions[index] :
-                (DefinitionBase)grid.RowDefinitions[index];
+                grid.ColumnDefinitions[index] :
+                grid.RowDefinitions[index];
         }
 
         /// <summary>
         /// Retrieves the ActualWidth or ActualHeight of the definition depending on its type Column or Row.
         /// </summary>
-        private double GetActualLength(DefinitionBase definition)
+        private double GetActualLength(DefinitionBase? definition)
         {
-            var column = definition as ColumnDefinition;
-
-            return column?.ActualWidth ?? ((RowDefinition)definition).ActualHeight;
+            return definition switch
+            {
+                ColumnDefinition columnDefinition => columnDefinition.ActualWidth,
+                RowDefinition rowDefinition => rowDefinition.ActualHeight,
+                _ => 0.0
+            };
         }
 
         /// <summary>
@@ -543,6 +563,12 @@ namespace ResizableGridDemo.Controls
         /// </summary>
         private void GetDeltaConstraints(out double minDelta, out double maxDelta)
         {
+            if (_resizeData?.Definition1 is null || _resizeData.Definition2 is null)
+            {
+                minDelta = 0.0;
+                maxDelta = 0.0;
+                return;
+            }
             double definition1Len = GetActualLength(_resizeData.Definition1);
             double definition1Min = _resizeData.Definition1.GetUserMinSizeValueCache();
             double definition1Max = _resizeData.Definition1.GetUserMaxSizeValueCache();
@@ -571,12 +597,16 @@ namespace ResizableGridDemo.Controls
         /// </summary>
         private void SetLengths(double definition1Pixels, double definition2Pixels)
         {
+            if (_resizeData?.Grid is null)
+            {
+                return;
+            }
             // For the case where both definition1 and 2 are stars, update all star values to match their current pixel values.
             if (_resizeData.SplitBehavior == SplitBehavior.Split)
             {
-                var definitions = _resizeData.ResizeDirection == GridResizeDirection.Columns ?
-                    (IAvaloniaReadOnlyList<DefinitionBase>)_resizeData.Grid.ColumnDefinitions :
-                    (IAvaloniaReadOnlyList<DefinitionBase>)_resizeData.Grid.RowDefinitions;
+                IAvaloniaReadOnlyList<DefinitionBase> definitions = _resizeData.ResizeDirection == GridResizeDirection.Columns ?
+                    _resizeData.Grid.ColumnDefinitions :
+                    _resizeData.Grid.RowDefinitions;
 
                 var definitionsCount = definitions.Count;
 
@@ -602,11 +632,17 @@ namespace ResizableGridDemo.Controls
             }
             else if (_resizeData.SplitBehavior == SplitBehavior.Resize1)
             {
-                SetDefinitionLength(_resizeData.Definition1, new GridLength(definition1Pixels));
+                if (_resizeData.Definition1 is not null)
+                {
+                    SetDefinitionLength(_resizeData.Definition1, new GridLength(definition1Pixels));
+                }
             }
             else
             {
-                SetDefinitionLength(_resizeData.Definition2, new GridLength(definition2Pixels));
+                if (_resizeData.Definition2 is not null)
+                {
+                    SetDefinitionLength(_resizeData.Definition2, new GridLength(definition2Pixels));
+                }
             }
         }
 
@@ -630,10 +666,10 @@ namespace ResizableGridDemo.Controls
                 delta = LayoutHelper.RoundLayoutValue(delta, LayoutHelper.GetLayoutScale(this));
             }
             
-            DefinitionBase definition1 = _resizeData.Definition1;
-            DefinitionBase definition2 = _resizeData.Definition2;
+            var definition1 = _resizeData.Definition1;
+            var definition2 = _resizeData.Definition2;
 
-            if (definition1 != null && definition2 != null)
+            if (definition1 is not null && definition2 is not null)
             {
                 double actualLength1 = GetActualLength(definition1);
                 double actualLength2 = GetActualLength(definition2);
@@ -696,20 +732,17 @@ namespace ResizableGridDemo.Controls
         private sealed class PreviewAdorner : Decorator
         {
             private readonly TranslateTransform _translation;
-            private readonly Decorator _decorator;
-            
+
             public PreviewAdorner(IControl previewControl)
             {
                 // Add a decorator to perform translations.
                 _translation = new TranslateTransform();
 
-                _decorator = new Decorator
+                Child = new Decorator
                 {
                     Child = previewControl, 
                     RenderTransform = _translation
                 };
-
-                Child = _decorator;
             }
 
             /// <summary>
@@ -769,22 +802,22 @@ namespace ResizableGridDemo.Controls
         private class ResizeData
         {
             public bool ShowsPreview;
-            public PreviewAdorner Adorner;
+            public PreviewAdorner? Adorner;
 
             // The constraints to keep the Preview within valid ranges.
             public double MinChange;
             public double MaxChange;
 
             // The grid to Resize.
-            public Grid Grid;
+            public Grid? Grid;
 
             // Cache of Resize Direction and Behavior.
             public GridResizeDirection ResizeDirection;
             public GridResizeBehavior ResizeBehavior;
 
             // The columns/rows to resize.
-            public DefinitionBase Definition1;
-            public DefinitionBase Definition2;
+            public DefinitionBase? Definition1;
+            public DefinitionBase? Definition2;
 
             // Are the columns/rows star lengths.
             public SplitBehavior SplitBehavior;
