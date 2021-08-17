@@ -211,25 +211,6 @@ namespace ResizableGridDemo.Views
             }
         }
 
-        private Grid? GetPanel()
-        {
-            if (Parent is ContentPresenter presenter)
-            {
-                if (presenter.GetVisualParent() is Grid grid)
-                {
-                    return grid;
-                }
-            }
-            else if (this.GetVisualParent() is Grid grid)
-            {
-                return grid;
-            }
-
-            return null;
-        }
-        
-        
-
         /// <summary>
         /// Initialize the data needed for resizing.
         /// </summary>
@@ -263,16 +244,6 @@ namespace ResizableGridDemo.Views
             }
         }
 
-        private T GetValueInternal<T>(GridSplitter gridSplitter, StyledPropertyBase<T> property)
-        {
-            if (gridSplitter.Parent is ContentPresenter contentPresenter)
-            {
-                return contentPresenter.GetValue(property);
-            }
-
-            return GetValue(property);
-        }
-        
         /// <summary>
         /// Returns true if GridSplitter can resize rows/columns.
         /// </summary>
@@ -834,6 +805,33 @@ namespace ResizableGridDemo.Views
             // The minimum of Width/Height of Splitter.  Used to ensure splitter 
             // isn't hidden by resizing a row/column smaller than the splitter.
             public double SplitterLength;
+        }
+
+        private Grid? GetPanel()
+        {
+            if (Parent is ContentPresenter presenter)
+            {
+                if (presenter.GetVisualParent() is Grid grid)
+                {
+                    return grid;
+                }
+            }
+            else if (this.GetVisualParent() is Grid grid)
+            {
+                return grid;
+            }
+
+            return null;
+        }
+
+        private T GetValueInternal<T>(GridSplitter gridSplitter, StyledPropertyBase<T> property)
+        {
+            if (gridSplitter.Parent is ContentPresenter contentPresenter)
+            {
+                return contentPresenter.GetValue(property);
+            }
+
+            return GetValue(property);
         }
     }
 }
